@@ -1,0 +1,121 @@
+#include <iostream>
+#include <iomanip>
+#include <vector>
+
+using namespace std;
+
+// Class representing a menu item
+class MenuItem {
+public:
+    string name;
+    double price;
+
+    // Constructor to initialize a menu item with a name and price
+    MenuItem(string itemName, double itemPrice) : name(itemName), price(itemPrice) {}
+};
+
+// Class representing a customer order
+class Order {
+public:
+    MenuItem item;  // Menu item selected for the order
+    int quantity;   // Quantity of the selected item in the order
+
+    // Constructor to initialize an order with a selected menu item and quantity
+    Order(MenuItem selectedItem, int orderQuantity) : item(selectedItem), quantity(orderQuantity) {}
+
+    // Method to calculate the subtotal of the order
+    double calculateSubtotal() const {
+        return item.price * quantity;
+    }
+};
+
+// Class representing the food billing system
+class BillingSystem {
+private:
+    vector<MenuItem> menu;      // Vector to store menu items
+    vector<Order> orders;       // Vector to store customer orders
+    double totalBill;           // Total bill for all orders
+
+public:
+    // Constructor to initialize the billing system with a menu
+    BillingSystem(const vector<MenuItem>& menuItems) : menu(menuItems), totalBill(0.0) {}
+
+    // Function to display the menu
+    void displayMenu() const {
+        cout << "===============================" << endl;
+        cout << "         Food Menu             " << endl;
+        cout << "===============================" << endl;
+
+        // Loop through the menu vector and display each menu item with its price
+        for (const auto& menuItem : menu) {
+            cout << menuItem.name << " - $" << fixed << setprecision(2) << menuItem.price << endl;
+        }
+
+        cout << "===============================" << endl;
+    }
+
+    // Function to take customer orders
+    void takeOrders() {
+        int choice, quantity;
+
+        do {
+            displayMenu();
+
+            // Get user input
+            cout << "Enter your choice (1-" << menu.size() << ") or 0 to exit: ";
+            cin >> choice;
+
+            // Check if the user wants to exit
+            if (choice == 0) {
+                break;
+            }
+
+            // Validate user input
+            if (choice < 1 || choice > menu.size()) {
+                cout << "Invalid choice. Please enter a valid menu number." << endl;
+                continue;
+            }
+
+            // Get quantity
+            cout << "Enter the quantity: ";
+            cin >> quantity;
+
+            // Create an order and add it to the vector
+            Order newOrder(menu[choice - 1], quantity);
+            orders.push_back(newOrder);
+
+            // Update the total bill
+            totalBill += newOrder.calculateSubtotal();
+
+            cout << "Added to the order. Subtotal: $" << fixed << setprecision(2) << newOrder.calculateSubtotal() << endl;
+
+        } while (true);
+    }
+
+    // Function to display the total bill
+    void displayTotalBill() const {
+        cout << "===============================" << endl;
+        cout << "         Total Bill            " << endl;
+        cout << "===============================" << endl;
+        cout << "Total: $" << fixed << setprecision(2) << totalBill << endl;
+        cout << "===============================" << endl;
+    }
+};
+
+int main() {
+    // Create a vector of menu items
+    vector<MenuItem> menuItems = {{"Burger", 5.00}, {"Pizza", 8.00}, {"Sandwich", 4.50}, {"Pasta", 7.00}};
+
+    // Create a BillingSystem object with the menu
+    BillingSystem billingSystem(menuItems);
+
+    // Take customer orders
+    billingSystem.takeOrders();
+
+    // Display the total bill
+    billingSystem.displayTotalBill();
+
+    cout << "Thank you for using the food billing system!" << endl;
+
+    return 0;
+}
